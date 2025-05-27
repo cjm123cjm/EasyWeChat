@@ -1,6 +1,30 @@
 # EasyWeChat
 模仿微信
 
+安装docker
+
+```
+两步解决yum无法安装软件问题：Cannot find a valid baseurl for repo: centos-sclo-rh/x86_64
+
+1、进入/etc/yum.repos.d目录，删除目录下面所有的软件包，删除命令如下：
+sudo rm -rf *
+
+2、下载安装阿里云镜像仓库：
+sudo curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+
+3、下载安装阿里云epel.repo：
+sudo curl -o /etc/yum.repos.d/epel.repo https://mirrors.aliyun.com/repo/epel-7.repo
+
+4、清除缓存：
+yum clean all
+
+5、生成缓存：
+yum makecache
+yum makecache fast
+```
+
+
+
 ## 数据库mysql
 
 ```dockerfile
@@ -31,13 +55,15 @@ docker run -d -p 3306:3306 --name chen_mysql -v $PWD/conf:/etc/mysql/conf.d -v $
 docker pull redis:7.0.5
 mkdir ~/redis
 cd ~/redis
-docker run -d -p 6379:6379 --name chen_redis --privileged=true 
--v $PWD/conf/redis.conf:/etc/redis/redis.conf 
--v $PWD/data:/data redis:7.0.5 
+docker run -d -p 6379:6379 --name chen_redis --privileged=true -v $PWD/conf/redis.conf:/etc/redis/redis.conf -v $PWD/data:/data redis:7.0.5 
 redis-server /etc/redis/redis.conf --appendonly yes
 ```
 
 - --privileged=true：表示给容器root权限，否则无法使用appenonly
 - redis-server：表示使用右侧路径中的配置文件启动。
 - --appendonly yes : 指定以aof形式启动
+
+```
+wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
+```
 

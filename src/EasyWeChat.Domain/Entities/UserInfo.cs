@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyWeChat.Domain.Entities
 {
@@ -10,6 +11,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 用户ID
         /// </summary>
+        [Key]
         public long UserId { get; set; }
         /// <summary>
         /// 邮箱
@@ -24,7 +26,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 0：直接加好友 1：同意后加好友
         /// </summary>
-        public int JoinType { get; set; }
+        public int JoinType { get; set; } = 1;
         /// <summary>
         /// 性别 0：女 1：男
         /// </summary>
@@ -37,7 +39,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 状态 0：启用 1：禁用
         /// </summary>
-        public int Status { get; set; }
+        public int Status { get; set; } = 0;
         /// <summary>
         /// 创建时间
         /// </summary>

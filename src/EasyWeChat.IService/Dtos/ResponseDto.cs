@@ -17,5 +17,9 @@
         /// 输出消息
         /// </summary>
         public string Message { get; set; } = string.Empty;
+        /// <summary>
+        /// token
+        /// </summary>
+        public string Token { get; set; } = string.Empty;
     }
 }

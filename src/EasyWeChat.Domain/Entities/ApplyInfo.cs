@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyWeChat.Domain.Entities
 {
@@ -10,6 +11,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 申请id
         /// </summary>
+        [Key]
         public long ApplyId { get; set; }
         /// <summary>
         /// 申请人id

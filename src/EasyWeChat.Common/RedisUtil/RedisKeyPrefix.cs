@@ -23,4 +23,24 @@ public static class RedisKeyPrefix
     /// 无前缀
     /// </summary>
     public const string Empty = "";
+
+    /// <summary>
+    /// 前缀
+    /// </summary>
+    public const string InstanceName = "eastwechat_";
+
+    /// <summary>
+    /// 验证码
+    /// </summary>
+    public const string VerifyCode = "VerifyCode_";
+
+    /// <summary>
+    /// 用户在线
+    /// </summary>
+    public const string Online = "Online_";
+
+    /// <summary>
+    /// 系统设置
+    /// </summary>
+    public const string SystemSeting = "SystemSeting";
 }

@@ -5,7 +5,7 @@ namespace EasyWeChat.Common.RedisUtil;
 public class CacheManager
 {
     static readonly StackExchangeRedisWrapper RedisClient
-            = new StackExchangeRedisWrapper(RedisKeyPrefix.Empty, 0, SerializerType.Json);
+            = new StackExchangeRedisWrapper(RedisKeyPrefix.InstanceName, 0, SerializerType.Json);
 
     static CacheManager()
     {

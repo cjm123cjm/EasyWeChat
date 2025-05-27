@@ -7,6 +7,9 @@ using System.Text;
 
 namespace EasyWeChat.Api.Extensions
 {
+    /// <summary>
+    /// 服务扩展
+    /// </summary>
     public static class ServiceExtensions
     {
         /// <summary>

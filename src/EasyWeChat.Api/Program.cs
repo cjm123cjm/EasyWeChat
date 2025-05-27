@@ -12,6 +12,7 @@ using EasyWeChat.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 //swagger添加jwt认证
@@ -85,9 +86,9 @@ app.UseErrorHandling();
 
 LocationStorage.Instance = app.Services;
 
-app.UseStaticFiles();
-
 app.UseCors("EasyWeChat.Client");
+
+app.UseStaticFiles();
 
 //认证
 app.UseAuthentication();

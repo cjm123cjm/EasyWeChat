@@ -14,5 +14,12 @@ namespace EasyWeChat.Domain
         public DbSet<UserContact> UserContacts { get; set; }
         public DbSet<GroupInfo> GroupInfos { get; set; }
         public DbSet<ApplyInfo> ApplyInfos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserContact>().HasKey(t => new { t.UserId, t.ContactId });
+        }
     }
 }

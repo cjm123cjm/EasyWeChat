@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\Inputs\" />
-    <Folder Include="Dtos\Outputs\" />
+    <Folder Include="Contanct\" />
   </ItemGroup>
 
 </Project>
