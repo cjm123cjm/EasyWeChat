@@ -26,5 +26,44 @@ namespace EasyWeChat.IService.Interfaces
         /// <param name="registInput"></param>
         /// <returns></returns>
         Task<ResponseDto> RegistAsync(RegistInput registInput);
+
+        /// <summary>
+        /// 我的好友
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseDto> GetMyFirentsAsync();
+
+        /// <summary>
+        /// 获取好友详情
+        /// </summary>
+        /// <param name="contactId">好友id</param>
+        /// <returns></returns>
+        Task<ResponseDto> GetFirentContactAsync(long contactId);
+
+        /// <summary>
+        /// 获取当前用户信息
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseDto> GetCurrentUserInfoAsync();
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseDto> UpdatePasswordAsync(UpdatePasswordInput updatePassword);
+
+        /// <summary>
+        /// 修改当前用户信息
+        /// </summary>
+        /// <param name="userInfoInput"></param>
+        /// <returns></returns>
+        Task<ResponseDto> UpdateCurrentUserInfoAsync(UserInfoInput userInfoInput);
+
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseDto> LoginOutAsync();
     }
 }

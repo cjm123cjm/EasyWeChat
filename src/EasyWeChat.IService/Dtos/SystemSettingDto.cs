@@ -1,4 +1,6 @@
-﻿namespace EasyWeChat.IService.Dtos
+﻿using Microsoft.AspNetCore.Http;
+
+namespace EasyWeChat.IService.Dtos
 {
     /// <summary>
     /// 系统设置
@@ -41,5 +43,9 @@
         /// 机器人头像(保存的是服务器地址)
         /// </summary>
         public string? RobotIcon { get; set; }
+        /// <summary>
+        /// 机器人图片地址
+        /// </summary>
+        public string? RobotConver { get; set; }
     }
 }

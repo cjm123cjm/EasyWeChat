@@ -12,7 +12,6 @@
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.11.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\EasyWeChat.Common\EasyWeChat.Common.csproj" />
 		<ProjectReference Include="..\EasyWeChat.Domain\EasyWeChat.Domain.csproj" />
 		<ProjectReference Include="..\EasyWeChat.IService\EasyWeChat.IService.csproj" />
 	</ItemGroup>

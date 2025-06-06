@@ -9,7 +9,8 @@ namespace EasyWeChat.Service
     {
         protected long LoginUserId { get; set; }
         protected string LoginUserName { get; set; }
-        protected long LoginRoleId { get; set; }
+        protected string LoginUserEmail { get; set; }
+        public bool IsAdmin { get; set; }
         protected IMapper ObjectMapper { get; set; }
         protected string ServerUrl { get; set; }
         protected IdWorker SnowIdWorker { get; set; }
@@ -21,8 +22,9 @@ namespace EasyWeChat.Service
                 if (httpContext.HttpContext!.User!.Identity!.IsAuthenticated)
                 {
                     LoginUserId = Convert.ToInt64(httpContext.HttpContext.User.Claims.First(t => t.Type == "UserId").Value);
-                    LoginRoleId = Convert.ToInt64(httpContext.HttpContext.User.Claims.First(t => t.Type == "RoleId").Value);
+                    IsAdmin = Convert.ToBoolean(httpContext.HttpContext.User.Claims.First(t => t.Type == "IsAdmin").Value);
                     LoginUserName = httpContext.HttpContext.User.Claims.First(t => t.Type == "UserName").Value.ToString();
+                    LoginUserEmail = httpContext.HttpContext.User.Claims.First(t => t.Type == "UserEmail").Value.ToString();
                     ServerUrl = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}";
                 }
             }

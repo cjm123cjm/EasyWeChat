@@ -22,6 +22,10 @@ namespace EasyWeChat.Domain.Entities
         /// </summary>
         public long ReceiveUserId { get; set; }
         /// <summary>
+        /// 联系人或群组id,0-ContanctId=ReceiveUserId，1-ContanctId=群组id
+        /// </summary>
+        public long ContanctId { get; set; }
+        /// <summary>
         /// 类型 0：好友 1：群组
         /// </summary>
         public int ContactType { get; set; }

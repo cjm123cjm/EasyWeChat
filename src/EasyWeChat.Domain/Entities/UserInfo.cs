@@ -62,5 +62,10 @@ namespace EasyWeChat.Domain.Entities
         /// 最后离开时间
         /// </summary>
         public DateTime? LastOffTime { get; set; }
+
+        /// <summary>
+        /// 图片后缀名
+        /// </summary>
+        public string? PicExtension { get; set; }
     }
 }

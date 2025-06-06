@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EasyWeChat.Common\EasyWeChat.Common.csproj" />
+  </ItemGroup>
+
 </Project>

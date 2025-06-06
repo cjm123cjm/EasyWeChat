@@ -4,6 +4,9 @@ using EasyWeChat.IService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EasyWeChat.Common.RedisUtil;
+using EasyWeChat.IService.Consts;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 
 namespace EasyWeChat.Api.Controllers
 {
@@ -15,14 +18,23 @@ namespace EasyWeChat.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
         /// 注入
         /// </summary>
         /// <param name="userService"></param>
-        public UserController(IUserService userService)
+        /// <param name="hostEnvironment"></param>
+        /// <param name="httpContextAccessor"></param>
+        public UserController(
+            IUserService userService,
+            IWebHostEnvironment hostEnvironment,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userService = userService;
+            _hostEnvironment = hostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -48,36 +60,101 @@ namespace EasyWeChat.Api.Controllers
         }
 
         /// <summary>
-        /// 获取系统设置
+        /// 我的好友
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet]
-        public ResponseDto GetSystemSettings()
+        [Authorize]
+        public async Task<ResponseDto> GetMyFirent()
         {
-            var system = CacheManager.Get<SystemSettingDto>(RedisKeyPrefix.SystemSeting);
-            ResponseDto response = new ResponseDto
-            {
-                Code = 200,
-                Result = system
-            };
-            return response;
+            return await _userService.GetMyFirentsAsync();
         }
 
         /// <summary>
-        /// 保存系统设置
+        /// 获取好友详情
+        /// </summary>
+        /// <param name="contactId">好友id</param>
+        /// <returns></returns>
+        [HttpGet("{contactId}")]
+        [Authorize]
+        public async Task<ResponseDto> GetFirentContact(long contactId)
+        {
+            return await _userService.GetFirentContactAsync(contactId);
+        }
+
+        /// <summary>
+        /// 获取当前用户信息
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         [Authorize]
-        [HttpPost]
-        public ResponseDto SaveSystemSettings([FromBody] SystemSettingDto systemSettingDto)
+        public async Task<ResponseDto> GetCurrentUserInfo()
         {
-            CacheManager.Set(RedisKeyPrefix.SystemSeting, systemSettingDto);
-            ResponseDto response = new ResponseDto
+            return await _userService.GetCurrentUserInfoAsync();
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public async Task<ResponseDto> UpdatePassword([FromBody] UpdatePasswordInput updatePassword)
+        {
+            return await _userService.UpdatePasswordAsync(updatePassword);
+        }
+
+        /// <summary>
+        /// 修改当前用户信息
+        /// </summary>
+        /// <param name="userInfoInput"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public async Task<ResponseDto> UpdateCurrentUserInfo([FromBody] UserInfoInput userInfoInput)
+        {
+            var userId = Convert.ToInt64(_httpContextAccessor!.HttpContext!.User.Claims.First(t => t.Type == "UserId").Value);
+            //保存图片
+            if (userInfoInput.avatarFile != null)
             {
-                Code = 200
-            };
-            return response;
+                // 获取文件后缀名
+                var extension = Path.GetExtension(userInfoInput.avatarFile.FileName);
+                // 为文件重命名，防止文件重名
+                var fileName = EasyWeChatConst.UserOriginal + userId + "." + extension;
+
+                using FileStream fileStream = new FileStream(
+                    // 拼接上传路径(upload文件夹必须事先存在)
+                    Path.Combine(_hostEnvironment.ContentRootPath, "upload", fileName),
+                    FileMode.Create, FileAccess.Write);
+                userInfoInput.avatarFile.CopyTo(fileStream);
+            }
+
+            if (userInfoInput.avatarCover != null)
+            {
+                // 获取文件后缀名
+                var extension = Path.GetExtension(userInfoInput.avatarCover.FileName);
+                // 为文件重命名，防止文件重名
+                var fileName = EasyWeChatConst.UserThumbnail + userId + "." + extension;
+
+                using FileStream fileStream = new FileStream(
+                    // 拼接上传路径(upload文件夹必须事先存在)
+                    Path.Combine(_hostEnvironment.ContentRootPath, "upload", fileName),
+                    FileMode.Create, FileAccess.Write);
+
+                userInfoInput.avatarCover.CopyTo(fileStream);
+            }
+            return await _userService.UpdateCurrentUserInfoAsync(userInfoInput);
+        }
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public async Task<ResponseDto> LoginOut()
+        {
+            return await _userService.LoginOutAsync();
         }
     }
 }

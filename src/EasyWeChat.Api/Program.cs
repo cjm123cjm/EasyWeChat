@@ -68,6 +68,15 @@ builder.Services.AddDbContext<EasyWeChatDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver")!);
 });
 
+//添加权限策略
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsAdmin", policy =>
+    {
+        policy.RequireClaim("IsAdmin", "true");
+    });
+});
+
 
 var app = builder.Build();
 

@@ -39,5 +39,9 @@ namespace EasyWeChat.Domain.Entities
         /// 状态 0：解散 1：正常
         /// </summary>
         public int Status { get; set; }
+        /// <summary>
+        /// 图片后缀名
+        /// </summary>
+        public string? PicExtension { get; set; }
     }
 }

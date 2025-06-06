@@ -37,5 +37,15 @@
         /// 是否是管理员
         /// </summary>
         public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// 头像
+        /// </summary>
+        public string? Thumbnail { get; set; }
+
+        /// <summary>
+        /// 后缀
+        /// </summary>
+        public string? PicExtension { get; set; }
     }
 }
