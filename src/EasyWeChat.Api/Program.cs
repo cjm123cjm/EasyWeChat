@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using IGeekFan.AspNetCore.Knife4jUI;
 using EasyWeChat.Api.Middlewares;
 using EasyWeChat.Service;
+using EasyWeChat.Api.WebSocket;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,7 @@ builder.Services.AddOptions().Configure<ApiBehaviorOptions>(options =>
              .Select(t => $"{t.Key}:{string.Join(",", t.Value)}");
         return new OkObjectResult(new ResponseDto
         {
-            Code = 404,
+            Code = 400,
             Message = string.Join("\r\n", errorInfo)
         });
     };
@@ -77,6 +78,11 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+//注册服务
+builder.Services.AddSingleton<NettyWebScoketServer>();
+builder.Services.AddTransient<WebSocketHandler>();
+builder.Services.AddTransient<ChannelContextUtils>();
+
 
 var app = builder.Build();
 
@@ -87,8 +93,19 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
     // 自定义的UI
     app.UseKnife4UI();
-
 }
+
+//启动工作流
+var host = app.Services.GetRequiredService<NettyWebScoketServer>();
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+lifetime.ApplicationStarted.Register(() =>
+{
+    _ = host.RunStartAsync();
+});
+lifetime.ApplicationStopping.Register(() =>
+{
+    _ = host.ShutdownAsync();
+});
 
 //错误中间件
 app.UseErrorHandling();

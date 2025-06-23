@@ -25,5 +25,10 @@
         /// 最后更新时间
         /// </summary>
         public DateTime? LastUpdatedTime { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; } = DateTime.Now;
     }
 }

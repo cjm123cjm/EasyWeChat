@@ -9,7 +9,7 @@ namespace EasyWeChat.Api.Controllers
     /// <summary>
     /// 联系人
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class UserContactController : ControllerBase

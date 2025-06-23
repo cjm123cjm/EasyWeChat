@@ -1,18 +1,22 @@
 ﻿using EasyWeChat.Common.RedisUtil;
+using EasyWeChat.Domain;
 using EasyWeChat.Domain.Entities;
 using EasyWeChat.Domain.IRepository;
 using EasyWeChat.IService.Consts;
 using EasyWeChat.IService.Dtos;
 using EasyWeChat.IService.Dtos.Inputs;
 using EasyWeChat.IService.Dtos.Outputs;
+using EasyWeChat.IService.Enums;
 using EasyWeChat.IService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Net.Mime;
 
 namespace EasyWeChat.Service.Implement
 {
     public class UserService : ServiceBase, IUserService
     {
+        private readonly EasyWeChatDbContext _chatDbContext;
         private readonly IJwtTokenGenerator _tokenGenerator;
         private readonly IUserInfoRepository _userInfoRepository;
         private readonly IConfiguration _configuration;
@@ -23,13 +27,15 @@ namespace EasyWeChat.Service.Implement
             IJwtTokenGenerator tokenGenerator,
             IUserInfoRepository userInfoRepository,
             IConfiguration configuration,
-            IUserContactRepository userContactRepository)
+            IUserContactRepository userContactRepository,
+            EasyWeChatDbContext chatDbContext)
         {
             _tokenGenerator = tokenGenerator;
             _userInfoRepository = userInfoRepository;
             responseDto = new ResponseDto();
             _configuration = configuration;
             _userContactRepository = userContactRepository;
+            _chatDbContext = chatDbContext;
         }
 
         /// <summary>
@@ -90,7 +96,6 @@ namespace EasyWeChat.Service.Implement
             return responseDto;
         }
 
-
         /// <summary>
         /// 我的好友
         /// </summary>
@@ -140,8 +145,18 @@ namespace EasyWeChat.Service.Implement
                 return responseDto;
             }
 
+            //判断验证码是否正确
+            string verifyCode = CacheManager.Get<string>(RedisKeyPrefix.VerifyCode + loginInput.Email);
+            if (verifyCode != loginInput.VerifyCode)
+            {
+                responseDto.Code = 400;
+                responseDto.Message = "验证码错误";
+
+                return responseDto;
+            }
+
             //判断是否在线,如果在线提示此账号已在其他地方登录
-            if (CacheManager.Exist(RedisKeyPrefix.Online + loginInput.Email))
+            if (CacheManager.Exist(RedisKeyPrefix.Heart + userInfo.UserId))
             {
                 int any = CacheManager.Get<int>(RedisKeyPrefix.Online + loginInput.Email);
                 if (any == 1)
@@ -151,16 +166,6 @@ namespace EasyWeChat.Service.Implement
 
                     return responseDto;
                 }
-            }
-
-            //判断验证码是否正确
-            string verifyCode = CacheManager.Get<string>(RedisKeyPrefix.VerifyCode + loginInput.Email);
-            if (verifyCode != loginInput.VerifyCode)
-            {
-                responseDto.Code = 400;
-                responseDto.Message = "验证码错误";
-
-                return responseDto;
             }
 
             var userDto = ObjectMapper.Map<UserInfoDto>(userInfo);
@@ -173,12 +178,21 @@ namespace EasyWeChat.Service.Implement
                 userDto.IsAdmin = true;
             }
 
+            //查询我的群组、我的联系人
+            var userContact = await _userContactRepository.All().Where(t => t.UserId == userInfo.UserId && (t.Status == 1) && t.ContanctType == 1).ToListAsync();
+            var contactIds = userContact.Select(t => t.ContactId).ToList();
+            CacheManager.Remove(RedisKeyPrefix.User_Contact_Ids + userDto.UserId);
+            if (contactIds.Count > 0)
+            {
+                CacheManager.Set(RedisKeyPrefix.User_Contact_Ids + userDto.UserId, contactIds);
+            }
+
             var token = _tokenGenerator.GenerateToken(userDto);
 
             //移除验证码
             CacheManager.Remove(RedisKeyPrefix.VerifyCode + userDto.Email);
-            //添加到redis 表示上线了
-            CacheManager.Set(RedisKeyPrefix.Online + userDto.Email, 1);
+            //保存用户信息到redis
+            CacheManager.Set(RedisKeyPrefix.Online + token, userDto);
 
             responseDto.Token = token;
             responseDto.Result = userDto;
@@ -238,7 +252,55 @@ namespace EasyWeChat.Service.Implement
 
             entity.UserId = SnowIdWorker.NextId();
 
-            await _userInfoRepository.AddAsync(entity);
+            await _chatDbContext.UserInfos.AddAsync(entity);
+
+            //添加机器人好友
+            SystemSettingDto dto = CacheManager.Get<SystemSettingDto>(RedisKeyPrefix.SystemSeting);
+            await _chatDbContext.UserContacts.AddAsync(new UserContact
+            {
+                UserId = entity.UserId,
+                ContactId = dto.RobotUid,
+                ContanctType = 0,
+                Status = 1,
+                LastUpdatedTime = DateTime.Now
+            });
+
+            //增加会话id
+            string sessionId = GetChatSessionIdByUserIds(new long[] { entity.UserId, dto.RobotUid });
+            ChatSession chatSession = new ChatSession
+            {
+                SessionId = sessionId,
+                LastMessage = dto.RobotWelcome,
+                LastReceviceTime = DateTime.Now
+            };
+            await _chatDbContext.ChatSessions.AddAsync(chatSession);
+            //增加会话人信息
+            ChatSessionUser chatSessionUser = new ChatSessionUser
+            {
+                UserId = entity.UserId,
+                ContactId = dto.RobotUid,
+                ContactType = 0,
+                SessionId = sessionId,
+                ContactName = dto.RobotNickName,
+                LastReceiveTime = DateTime.Now
+            };
+            await _chatDbContext.ChatSessionUsers.AddAsync(chatSessionUser);
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.SessionId = sessionId;
+            chatMessage.MessageType = (int)MessageTypeEnum.CHAT;
+            chatMessage.MessageContent = dto.RobotWelcome;
+            chatMessage.SendUserId = dto.RobotUid;
+            chatMessage.SendUserNickName = dto.RobotNickName;
+            chatMessage.SendTime = DateTime.Now;
+            chatMessage.ContactId = entity.UserId;
+            chatMessage.ContactName = entity.NickName;
+            chatMessage.ContactType = 0;
+            chatMessage.Status = 1;
+            await _chatDbContext.ChatMessages.AddAsync(chatMessage);
+
+            await _chatDbContext.SaveChangesAsync();
+
+            CacheManager.Remove(RedisKeyPrefix.VerifyCode + registInput.Email);
 
             return responseDto;
         }
@@ -268,6 +330,40 @@ namespace EasyWeChat.Service.Implement
             }
 
             await _userInfoRepository.UpdateAsync(userInfo);
+
+            return responseDto;
+        }
+
+        /// <summary>
+        /// 更新用户最后连接时间
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResponseDto> UpdateLastLoginTimeAsync(long userId)
+        {
+            var userInfo = await _userInfoRepository.FindByIdAsync(LoginUserId);
+            if (userInfo != null)
+            {
+                userInfo.LastLoginTime = DateTime.Now;
+
+                await _userInfoRepository.UpdateAsync(userInfo);
+            }
+
+            return responseDto;
+        }
+
+        /// <summary>
+        /// 更新用户最后离线时间
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResponseDto> UpdateLastOffTimeAsync(long userId)
+        {
+            var userInfo = await _userInfoRepository.FindByIdAsync(LoginUserId);
+            if (userInfo != null)
+            {
+                userInfo.LastOffTime = DateTime.Now;
+
+                await _userInfoRepository.UpdateAsync(userInfo);
+            }
 
             return responseDto;
         }

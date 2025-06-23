@@ -40,7 +40,18 @@ public static class RedisKeyPrefix
     public const string Online = "Online_";
 
     /// <summary>
+    /// 用户心跳检验
+    /// </summary>
+    public const string Heart = "Heart_";
+
+    /// <summary>
     /// 系统设置
     /// </summary>
     public const string SystemSeting = "SystemSeting";
+
+    /// <summary>
+    /// 用户联系人
+    /// </summary>
+
+    public const string User_Contact_Ids = "easywechat:ws:contactids:";
 }

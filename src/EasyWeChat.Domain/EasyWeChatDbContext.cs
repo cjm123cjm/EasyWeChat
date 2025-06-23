@@ -14,6 +14,9 @@ namespace EasyWeChat.Domain
         public DbSet<UserContact> UserContacts { get; set; }
         public DbSet<GroupInfo> GroupInfos { get; set; }
         public DbSet<ApplyInfo> ApplyInfos { get; set; }
+        public DbSet<ChatSession> ChatSessions { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatSessionUser> ChatSessionUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

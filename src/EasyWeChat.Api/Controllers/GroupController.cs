@@ -10,7 +10,7 @@ namespace EasyWeChat.Api.Controllers
     /// <summary>
     /// 群组服务
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class GroupController : ControllerBase

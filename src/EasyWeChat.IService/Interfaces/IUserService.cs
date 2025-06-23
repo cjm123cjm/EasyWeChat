@@ -65,5 +65,18 @@ namespace EasyWeChat.IService.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<ResponseDto> LoginOutAsync();
+
+        /// <summary>
+        /// 更新用户最后连接时间
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResponseDto> UpdateLastLoginTimeAsync(long userId);
+
+        /// <summary>
+        /// 更新用户最后离线时间
+        /// </summary>
+        /// <returns></returns>
+        Task<ResponseDto> UpdateLastOffTimeAsync(long userId);
     }
 }

@@ -16,7 +16,7 @@ namespace EasyWeChat.Api.Controllers
     /// <summary>
     /// 管理员接口
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize(Policy = "IsAdmin")]
     public class AdminController : ControllerBase

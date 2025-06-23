@@ -33,6 +33,12 @@ namespace EasyWeChat.Service
 
             SnowIdWorker = SnowflakeUtil.CreateIdWorker();
         }
+        public string GetChatSessionIdByUserIds(long[] userIds)
+        {
+            userIds = userIds.OrderBy(t => t).ToArray();
+
+            return string.Join("-", userIds);
+        }
     }
 
 }

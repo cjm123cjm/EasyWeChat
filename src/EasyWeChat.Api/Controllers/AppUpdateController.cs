@@ -9,7 +9,7 @@ namespace EasyWeChat.Api.Controllers
     /// <summary>
     /// app发布服务
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize(Policy = "IsAdmin")]
     public class AppUpdateController : ControllerBase

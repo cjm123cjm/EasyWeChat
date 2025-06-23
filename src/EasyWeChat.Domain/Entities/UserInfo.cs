@@ -16,7 +16,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 邮箱
         /// </summary>
-        [Column(TypeName ="varchar(50)")]
+        [Column(TypeName = "varchar(50)")]
         public string Email { get; set; } = null!;
         /// <summary>
         /// 昵称
@@ -43,7 +43,7 @@ namespace EasyWeChat.Domain.Entities
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime CreatedTime { get; set; }=DateTime.Now;
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
         /// <summary>
         /// 最后登录时间
         /// </summary>
