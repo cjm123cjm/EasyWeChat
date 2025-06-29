@@ -34,15 +34,15 @@ namespace EasyWeChat.IService.Dtos.Inputs
         /// <summary>
         /// 机器人昵称
         /// </summary>
-        public string? RobotNickName { get; set; }
+        public string RobotNickName { get; set; } = null!;
         /// <summary>
         /// 机器人欢迎语
         /// </summary>
-        public string? RobotWelcome { get; set; }
+        public string RobotWelcome { get; set; } = null!;
         /// <summary>
         /// 机器人头像(保存的是服务器地址)
         /// </summary>
-        public string? RobotIcon { get; set; }
+        public string? RobotIcon { get; set; } = null;
         /// <summary>
         /// 机器人图片
         /// </summary>
@@ -50,6 +50,6 @@ namespace EasyWeChat.IService.Dtos.Inputs
         /// <summary>
         /// 机器人缩略图
         /// </summary>
-        public IFormFile? RobotConver { get; set; } = null;
+        public IFormFile? RobotConverFile { get; set; } = null;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EasyWeChat.IService.Dtos;
+using EasyWeChat.IService.Dtos.Inputs;
 
 namespace EasyWeChat.IService.Interfaces
 {
@@ -11,6 +12,6 @@ namespace EasyWeChat.IService.Interfaces
         /// 搜索联系人(用户id或群组id)0-用户 1-群组
         /// </summary>
         /// <returns></returns>
-        Task<ResponseDto> GetSeachContactsAsync(long contactId, int type);
+        Task<ResponseDto> GetSeachContactsAsync(SearchContactQueryInput queryInput);
     }
 }

@@ -17,5 +17,13 @@
         /// 验证码
         /// </summary>
         public string VerifyCode { get; set; } = null!;
+        /// <summary>
+        /// 验证码key
+        /// </summary>
+        public string CodeKey { get; set; } = null!;
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        public string NickName { get; set; } = null!;
     }
 }

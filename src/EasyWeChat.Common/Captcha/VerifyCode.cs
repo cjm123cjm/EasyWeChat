@@ -13,9 +13,15 @@
         /// 验证码数据流
         /// </summary>
         public byte[] Image { get; set; }
+        
         /// <summary>
         /// base64
         /// </summary>
         public string Base64Str { get { return Convert.ToBase64String(Image); } }
+
+        /// <summary>
+        /// 验证码Key
+        /// </summary>
+        public Guid CodeKey { get; set; } = Guid.NewGuid();
     }
 }

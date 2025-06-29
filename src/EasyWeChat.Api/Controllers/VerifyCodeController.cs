@@ -1,8 +1,10 @@
 ﻿using EasyWeChat.Common.Captcha;
 using EasyWeChat.Common.RedisUtil;
+using EasyWeChat.IService.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static DotNetty.Codecs.Http.HttpContentEncoder;
 
 namespace EasyWeChat.Api.Controllers
 {
@@ -16,13 +18,13 @@ namespace EasyWeChat.Api.Controllers
         /// <summary>
         /// 生成图片验证码
         /// </summary>
-        /// <param name="codeType">验证码类型 0：纯数字 1：数字+字母 2：数字运算 默认1</param>
-        /// <param name="email">邮箱</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpGet("{codeType}/{email}")]
-        public VerifyCode Captcha(string codeType, string email)
+        [HttpPost]
+        public ResponseDto Captcha()
         {
+            //验证码类型 0：纯数字 1：数字+字母 2：数字运算 默认1
+            string codeType = "2";
             VerifyCode codeInfo = new VerifyCode();
             if (codeType == "0")
             {
@@ -38,9 +40,15 @@ namespace EasyWeChat.Api.Controllers
             }
 
             //保存到redis中
-            CacheManager.Set(RedisKeyPrefix.VerifyCode + email, codeInfo, TimeSpan.FromMinutes(5));
+            CacheManager.Set(RedisKeyPrefix.VerifyCode + codeInfo.CodeKey, codeInfo, TimeSpan.FromMinutes(5));
 
-            return codeInfo;
+            ResponseDto dto = new ResponseDto()
+            {
+                Code = 200,
+                Result = new { codeInfo.Image, codeInfo.CodeKey }
+            };
+
+            return dto;
         }
     }
 }

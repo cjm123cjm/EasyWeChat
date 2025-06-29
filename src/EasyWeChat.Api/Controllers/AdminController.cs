@@ -18,7 +18,7 @@ namespace EasyWeChat.Api.Controllers
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Policy = "IsAdmin")]
+    //[Authorize(Policy = "IsAdmin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -119,17 +119,17 @@ namespace EasyWeChat.Api.Controllers
                     FileMode.Create, FileAccess.Write);
                 systemSettingDto.RobotFile.CopyTo(fileStream);
             }
-            if (systemSettingDto.RobotConver != null)
+            if (systemSettingDto.RobotConverFile != null)
             {
                 // 获取文件后缀名
-                var extension = Path.GetExtension(systemSettingDto.RobotConver.FileName);
+                var extension = Path.GetExtension(systemSettingDto.RobotConverFile.FileName);
                 // 为文件重命名，防止文件重名
                 var fileName = EasyWeChatConst.RobotThumbnail + "." + extension;
                 using FileStream fileStream = new FileStream(
                 // 拼接上传路径(upload文件夹必须事先存在)
                     Path.Combine(_hostEnvironment.ContentRootPath, "upload", fileName),
                     FileMode.Create, FileAccess.Write);
-                systemSettingDto.RobotConver.CopyTo(fileStream);
+                systemSettingDto.RobotConverFile.CopyTo(fileStream);
 
                 string ServerUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
                 systemDto.RobotConver = ServerUrl + "/upload/" + fileName;

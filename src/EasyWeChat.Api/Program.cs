@@ -66,7 +66,7 @@ builder.Services.AddOptions().Configure<ApiBehaviorOptions>(options =>
 //注入dbcontext
 builder.Services.AddDbContext<EasyWeChatDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("sqlserver")!);
+    options.UseMySql(builder.Configuration.GetConnectionString("mysql"), new MySqlServerVersion("5.7"));
 });
 
 //添加权限策略

@@ -42,10 +42,10 @@ namespace EasyWeChat.IService.Dtos
         /// <summary>
         /// 机器人头像(保存的是服务器地址)
         /// </summary>
-        public string? RobotIcon { get; set; }
+        public string? RobotIcon { get; set; } = null;
         /// <summary>
         /// 机器人图片地址
         /// </summary>
-        public string? RobotConver { get; set; }
+        public string? RobotConver { get; set; } = null;
     }
 }

@@ -23,6 +23,7 @@ namespace EasyWeChat.Domain
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<UserContact>().HasKey(t => new { t.UserId, t.ContactId });
+            modelBuilder.Entity<ChatSessionUser>().HasKey(t => new { t.UserId, t.ContactId, t.ContactType });
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace EasyWeChat.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EasyWeChat.Domain.Entities
 {
     /// <summary>
     /// 会话信息
@@ -8,6 +10,8 @@
         /// <summary>
         /// 会话id
         /// </summary>
+        [Key]
+        [MaxLength(100)]
         public string SessionId { get; set; } = null!;
         /// <summary>
         /// 最后接收的消息

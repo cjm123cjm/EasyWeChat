@@ -27,8 +27,8 @@
         public string? AreaName { get; set; }
 
         /// <summary>
-        /// 是否是好友
+        /// 状态 0：非好友 1：好友 2：已删除好友 3：被好友删除 4：已拉黑好友 5：被好友拉黑
         /// </summary>
-        public bool IsFriends { get; set; }
+        public int Status { get; set; }
     }
 }

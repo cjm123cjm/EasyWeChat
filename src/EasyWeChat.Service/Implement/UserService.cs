@@ -1,4 +1,5 @@
-﻿using EasyWeChat.Common.RedisUtil;
+﻿using EasyWeChat.Common.Captcha;
+using EasyWeChat.Common.RedisUtil;
 using EasyWeChat.Domain;
 using EasyWeChat.Domain.Entities;
 using EasyWeChat.Domain.IRepository;
@@ -112,7 +113,6 @@ namespace EasyWeChat.Service.Implement
 
             foreach (var item in userContactDtos)
             {
-                item.IsFriends = true;
                 var first = users.FirstOrDefault(t => t.UserId == item.ContactId);
                 if (first != null)
                 {
@@ -134,6 +134,16 @@ namespace EasyWeChat.Service.Implement
         /// <returns></returns>
         public async Task<ResponseDto> LoginAsync(LoginInput loginInput)
         {
+            //判断验证码是否正确
+            var verifyCode = CacheManager.Get<VerifyCode>(RedisKeyPrefix.VerifyCode + loginInput.codeKey);
+            if (verifyCode == null || verifyCode.Code != loginInput.VerifyCode)
+            {
+                responseDto.Code = 400;
+                responseDto.Message = "验证码错误";
+
+                return responseDto;
+            }
+
             var userInfo = await _userInfoRepository.GetAllWhere(t => t.Email == loginInput.Email && t.Password == loginInput.Password)
                                                     .FirstOrDefaultAsync();
 
@@ -141,16 +151,6 @@ namespace EasyWeChat.Service.Implement
             {
                 responseDto.Code = 400;
                 responseDto.Message = "账户或密码错误";
-
-                return responseDto;
-            }
-
-            //判断验证码是否正确
-            string verifyCode = CacheManager.Get<string>(RedisKeyPrefix.VerifyCode + loginInput.Email);
-            if (verifyCode != loginInput.VerifyCode)
-            {
-                responseDto.Code = 400;
-                responseDto.Message = "验证码错误";
 
                 return responseDto;
             }
@@ -190,7 +190,7 @@ namespace EasyWeChat.Service.Implement
             var token = _tokenGenerator.GenerateToken(userDto);
 
             //移除验证码
-            CacheManager.Remove(RedisKeyPrefix.VerifyCode + userDto.Email);
+            CacheManager.Remove(RedisKeyPrefix.VerifyCode + loginInput.codeKey);
             //保存用户信息到redis
             CacheManager.Set(RedisKeyPrefix.Online + token, userDto);
 
@@ -231,20 +231,20 @@ namespace EasyWeChat.Service.Implement
         /// <returns></returns>
         public async Task<ResponseDto> RegistAsync(RegistInput registInput)
         {
+            //判断验证码是否正确
+            var verifyCode = CacheManager.Get<VerifyCode>(RedisKeyPrefix.VerifyCode + registInput.CodeKey);
+            if (verifyCode == null || verifyCode.Code != registInput.VerifyCode)
+            {
+                responseDto.Code = 400;
+                responseDto.Message = "验证码错误";
+                return responseDto;
+            }
+
             var user = await _userInfoRepository.GetByEmailAsync(registInput.Email);
             if (user != null)
             {
                 responseDto.Message = "邮箱已存在";
                 responseDto.Code = 400;
-                return responseDto;
-            }
-
-            //判断验证码是否正确
-            string verifyCode = CacheManager.Get<string>(RedisKeyPrefix.VerifyCode + registInput.Email);
-            if (verifyCode != registInput.VerifyCode)
-            {
-                responseDto.Code = 400;
-                responseDto.Message = "验证码错误";
                 return responseDto;
             }
 

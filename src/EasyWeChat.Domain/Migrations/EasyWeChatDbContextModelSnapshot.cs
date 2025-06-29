@@ -3,7 +3,6 @@ using System;
 using EasyWeChat.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -18,17 +17,13 @@ namespace EasyWeChat.Domain.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.36")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("EasyWeChat.Domain.Entities.ApplyInfo", b =>
                 {
                     b.Property<long>("ApplyId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ApplyId"), 1L, 1);
 
                     b.Property<string>("ApplyMessage")
                         .HasColumnType("varchar(50)");
@@ -39,8 +34,11 @@ namespace EasyWeChat.Domain.Migrations
                     b.Property<int>("ContactType")
                         .HasColumnType("int");
 
+                    b.Property<long>("ContanctId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("LastApplyTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<long>("ReceiveUserId")
                         .HasColumnType("bigint");
@@ -53,16 +51,114 @@ namespace EasyWeChat.Domain.Migrations
                     b.ToTable("ApplyInfos");
                 });
 
+            modelBuilder.Entity("EasyWeChat.Domain.Entities.ChatMessage", b =>
+                {
+                    b.Property<long>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ContactId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ContactType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<double>("FileSize")
+                        .HasColumnType("double");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MessageContent")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("MessageType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SendTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("SendUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("SendUserNickName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("ChatMessages");
+                });
+
+            modelBuilder.Entity("EasyWeChat.Domain.Entities.ChatSession", b =>
+                {
+                    b.Property<string>("SessionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("LastMessage")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastReceviceTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("SessionId");
+
+                    b.ToTable("ChatSessions");
+                });
+
+            modelBuilder.Entity("EasyWeChat.Domain.Entities.ChatSessionUser", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ContactId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ContactType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContactName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastReceiveTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("UserId", "ContactId", "ContactType");
+
+                    b.ToTable("ChatSessionUsers");
+                });
+
             modelBuilder.Entity("EasyWeChat.Domain.Entities.GroupInfo", b =>
                 {
                     b.Property<long>("GroupId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("GroupId"), 1L, 1);
-
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("GroupName")
                         .IsRequired()
@@ -76,6 +172,9 @@ namespace EasyWeChat.Domain.Migrations
 
                     b.Property<int>("JoinType")
                         .HasColumnType("int");
+
+                    b.Property<string>("PicExtension")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -96,8 +195,11 @@ namespace EasyWeChat.Domain.Migrations
                     b.Property<int>("ContanctType")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime?>("LastUpdatedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -113,8 +215,6 @@ namespace EasyWeChat.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserId"), 1L, 1);
-
                     b.Property<string>("AreaCode")
                         .HasColumnType("varchar(50)");
 
@@ -122,7 +222,7 @@ namespace EasyWeChat.Domain.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -132,10 +232,10 @@ namespace EasyWeChat.Domain.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("LastLoginTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("LastOffTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NickName")
                         .IsRequired()
@@ -144,6 +244,9 @@ namespace EasyWeChat.Domain.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("varchar(32)");
+
+                    b.Property<string>("PicExtension")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Sex")
                         .HasColumnType("int");

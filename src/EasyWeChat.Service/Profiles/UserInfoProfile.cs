@@ -12,6 +12,8 @@ namespace EasyWeChat.Service.Profiles
             CreateMap<UserInfoDto, UserInfo>().ReverseMap();
 
             CreateMap<UserInfoInput, UserInfo>().ReverseMap();
+
+            CreateMap<RegistInput, UserInfo>().ReverseMap();
         }
     }
 }

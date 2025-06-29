@@ -17,5 +17,9 @@
         /// 验证码
         /// </summary>
         public string VerifyCode { get; set; } = null!;
+        /// <summary>
+        /// 验证码key
+        /// </summary>
+        public string codeKey { get; set; } = null!;
     }
 }

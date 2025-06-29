@@ -1,4 +1,5 @@
 ﻿using EasyWeChat.IService.Dtos;
+using EasyWeChat.IService.Dtos.Inputs;
 using EasyWeChat.IService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,6 @@ namespace EasyWeChat.Api.Controllers
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
     public class UserContactController : ControllerBase
     {
         private readonly IUserContactService _userContactService;
@@ -26,13 +26,13 @@ namespace EasyWeChat.Api.Controllers
         }
 
         /// <summary>
-        /// 搜索联系人(用户id或群组id)0-用户 1-群组
+        /// 搜索联系人/群组
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{type}/{contactId}")]
-        public async Task<ResponseDto> GetSeachContactsAsync(int type, long contactId)
+        [HttpPost]
+        public async Task<ResponseDto> GetSeachContacts([FromBody] SearchContactQueryInput queryInput)
         {
-            return await _userContactService.GetSeachContactsAsync(contactId, type);
+            return await _userContactService.GetSeachContactsAsync(queryInput);
         }
     }
 }
